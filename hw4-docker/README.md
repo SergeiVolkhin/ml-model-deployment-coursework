@@ -1,23 +1,22 @@
-# HW4 - Dockerfile and Compose best practices
+# Модуль 4. Лучшие практики Docker
 
-A write-up on Docker networks, volumes, and resource limits. Submitted as a PDF for this module.
+## Цели задания
 
-## Stack
+- Разобрать сети, тома и лимиты ресурсов в Docker Compose.
+- Сформулировать правила построения Dockerfile и оркестрации сервисов.
 
-Docker, Docker Compose.
+## Условия
 
-## Assignment
+Нужно объяснить и применить лучшие практики Docker: сети для связи сервисов, тома для
+постоянного хранения, ограничения CPU и памяти через `deploy.resources`. Ответ сдан в
+виде PDF, а не ноутбука, так как задание про правила и обоснование, а не про запуск кода.
 
-Required to explain and apply Docker best practices: inter-service networks and DNS resolution, persistent volumes for data sharing, and CPU/memory limits via `deploy.resources`. The deliverable was a written answer rather than a notebook.
+## Что внутри
 
-## Files
+- [`HW4_Вольхин_Сергей.pdf`](HW4_Вольхин_Сергей.pdf) - сданный ответ (практики Docker).
+- [`Развертывание ML моделей_ Домашнее задание 4. Dockerfile по правилам.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%204.%20Dockerfile%20по%20правилам.pdf) - условие задания.
+- [`сети, тома, ресурсы.txt`](сети,%20тома,%20ресурсы.txt) - конспект (сети, тома, ресурсы).
 
-| File | Description |
-|------|-------------|
-| `HW4_Вольхин_Сергей.pdf` | Submitted answer (Docker best practices) |
-| `Развертывание ML моделей_ Домашнее задание 4. Dockerfile по правилам.pdf` | Assignment specification |
-| `сети, тома, ресурсы.txt` | Course notes (networks, volumes, resources) |
+---
 
-## Notes
-
-I submitted this one as a PDF because the assignment was about stating rules and rationale, not running code. A notebook would have been mostly prose anyway.
+[← К списку модулей](../README.ru.md)

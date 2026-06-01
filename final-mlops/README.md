@@ -1,26 +1,26 @@
-# Final - End-to-end MLOps platform (capstone)
+# Итоговый проект. Сквозная MLOps-платформа
 
-A production-grade MLOps system (uneemi) covering the full model lifecycle, from data cleaning and training to retiring an old model by switching traffic to a new one.
+## Цели задания
 
-## Stack
+- Построить production-платформу MLOps, покрывающую полный жизненный цикл модели.
+- Автоматизировать путь от данных до вывода старой модели из эксплуатации.
 
-Python 3.11, Apache Airflow 2.10.4, MLflow 2.22.1, Feast 0.40.1 (Redis online + parquet/MinIO offline), Evidently 0.4.40, SigLIP 2 (ONNX), FastAPI serving, Prometheus/Grafana, Terraform, Docker Compose, GitHub Actions.
+## Условия
 
-## Assignment
+Итоговый проект - законченная MLOps-платформа (uneemi): фича-, обучающий и мониторинговый
+пайплайны как DAG Airflow; промоут champion/challenger за гейтом качества; горячая
+подмена модели в сервинге без рестарта; continuous training по дрифту (Evidently, PSI);
+guardrail-откат при срыве latency или доли ошибок. SigLIP 2 (ONNX) работает слоем
+извлечения признаков (768d board-эмбеддинги).
 
-The capstone builds a complete MLOps platform: feature, training, and monitoring pipelines as Airflow DAGs; champion/challenger promotion behind a quality gate; hot model swap in serving without a restart; drift-triggered continuous training (Evidently, PSI); and guardrail rollback on a latency or error-rate breach. SigLIP 2 runs as an ONNX feature encoder producing 768d board embeddings.
+## Что внутри
 
-## Files
+- [`uneemi-mlops-main/`](uneemi-mlops-main/) - полный проект: `dags/`, `serving/`, `feature_repo/`, `monitoring/`, `infra/`, `training/`, `docs/`, `tests/`.
+- [`uneemi-mlops-main/README.md`](uneemi-mlops-main/README.md) - подробное описание (также опубликовано как [github.com/SergeiVolkhin/uneemi-mlops](https://github.com/SergeiVolkhin/uneemi-mlops)).
+- [`Задание.pdf`](Задание.pdf) - условие итогового задания.
+- [`компоненты из перечня.pdf`](компоненты%20из%20перечня.pdf) - перечень компонентов (C1-C9).
+- [`MLOps Continuous delivery.pdf`](MLOps%20Continuous%20delivery.pdf) - справочный материал.
 
-| File | Description |
-|------|-------------|
-| `uneemi-mlops-main/` | Full MLOps project: `dags/`, `serving/`, `feature_repo/`, `monitoring/`, `infra/`, `training/`, `docs/`, `tests/` |
-| `Задание.pdf` | Final assignment specification |
-| `компоненты из перечня.pdf` | Required components list (C1-C9, Kreuzberger et al.) |
-| `MLOps Continuous delivery.pdf` | Reference material |
+---
 
-Full project writeup: [`uneemi-mlops-main/README.md`](uneemi-mlops-main/README.md). This project is also published at [github.com/SergeiVolkhin/uneemi-mlops](https://github.com/SergeiVolkhin/uneemi-mlops).
-
-## Notes
-
-The piece I am most happy with is the champion/challenger gate. A challenger only reaches Production if its holdout ROC-AUC clears the threshold and beats the current champion, so promotion is never just "newer wins". The old version moves to Archived automatically and serving picks up the new one hot.
+[← К списку модулей](../README.ru.md)

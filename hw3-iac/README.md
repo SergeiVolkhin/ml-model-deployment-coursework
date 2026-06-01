@@ -1,22 +1,22 @@
-# HW3 - Infrastructure as Code
+# Модуль 3. Инфраструктура как код
 
-Fixing and validating a broken OpenTofu / Terraform configuration, plus the declarative IaC workflow.
+## Цели задания
 
-## Stack
+- Освоить декларативный подход IaC (OpenTofu / Terraform).
+- Научиться читать ошибки валидатора и доводить конфигурацию до рабочего плана.
+- Затронуть управление конфигурацией через Ansible.
 
-OpenTofu (Terraform), Ansible, YAML, Python 3 (`pyyaml`, `IPython.display`).
+## Условия
 
-## Assignment
+Основная задача - взять намеренно сломанную конфигурацию OpenTofu и довести её до чистых
+`validate` и `plan`, попутно разобрав управление конфигурацией Ansible. Я прошёл по
+ошибкам по одной и задокументировал цикл validate -> plan.
 
-The core task was to take an intentionally broken OpenTofu config and get it to validate and plan cleanly, and to cover configuration management with Ansible alongside it. I worked through the errors one at a time and documented the validate then plan loop.
+## Что внутри
 
-## Files
+- [`HW3_iac_Вольхин_Сергей.ipynb`](HW3_iac_Вольхин_Сергей.ipynb) - решение: исправления IaC и валидация.
+- [`Развертывание ML моделей_ Домашнее задание 3. Облачная инфраструктура.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%203.%20Облачная%20инфраструктура.pdf) - условие задания.
 
-| File | Description |
-|------|-------------|
-| `HW3_iac_Вольхин_Сергей.ipynb` | Main solution notebook (IaC fixes + validation) |
-| `Развертывание ML моделей_ Домашнее задание 3. Облачная инфраструктура.pdf` | Assignment specification |
+---
 
-## Notes
-
-Most of the time went into reading OpenTofu's error messages carefully. Half of them pointed at the wrong line, so I learned to trust `tofu validate` over the inline hints.
+[← К списку модулей](../README.ru.md)

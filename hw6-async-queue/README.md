@@ -1,25 +1,24 @@
-# HW6 - Async inference with a message queue
+# Модуль 6. Асинхронный инференс и очереди
 
-Asynchronous embedding service over Redis Streams with request batching.
+## Цели задания
 
-## Stack
+- Построить асинхронный конвейер инференса на брокере сообщений.
+- Освоить батчинг запросов и ленивую загрузку модели с прогревом.
 
-Python 3.11, `asyncio`, FastAPI, Uvicorn, Redis Streams, FastStream, transformers + torch (rubert-tiny2), Pydantic, `opencv-python-headless`, pytest-asyncio.
+## Условия
 
-## Assignment
+Нужно собрать асинхронный пайплайн: продюсер на FastAPI публикует текст в Redis,
+консьюмер на FastStream батчит запросы и считает модель (rubert-tiny2), результаты уходят
+в стрим `embeddings.ready`. Я добавил ленивую модель с прогревом и батч-процессор,
+который сбрасывает буфер по размеру или таймауту, плюс спецификацию AsyncAPI для потока
+face-blur из HW5.
 
-Build an asynchronous inference pipeline: a FastAPI producer publishes text to Redis, a FastStream consumer batches requests and runs the model, and results go back on an `embeddings.ready` stream. I added a lazy-loaded model with warmup and a batch processor that flushes on size or timeout, plus an AsyncAPI spec for the face-blur event flow from HW5.
+## Что внутри
 
-## Files
+- [`ML-HW_6-main/`](ML-HW_6-main/) - проект: `src/` (broker / consumer / producer / batching), тесты, docker-compose.
+- [`ML-HW_6-main/README.md`](ML-HW_6-main/README.md) - подробное описание проекта.
+- [`Развертывание ML моделей_ Домашнее задание 6. Подключение очереди и асинхронной обработки.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%206.%20Подключение%20очереди%20и%20асинхронной%20обработки.pdf) - условие задания.
 
-| File | Description |
-|------|-------------|
-| `ML-HW_6-main/` | Main project: `src/` (broker/consumer/producer/batching), tests, docker-compose |
-| `ML-HW_6-main/HW6_Async_Volkhin_Sergei.ipynb` | Solution notebook |
-| `Развертывание ML моделей_ Домашнее задание 6. Подключение очереди и асинхронной обработки.pdf` | Assignment specification |
+---
 
-Full project writeup: [`ML-HW_6-main/README.md`](ML-HW_6-main/README.md).
-
-## Notes
-
-The batch processor flushes on whichever comes first, 8 items or 0.5s, and getting that race right under pytest-asyncio took a couple of tries. The first version deadlocked when the timeout and the size trigger fired at the same time.
+[← К списку модулей](../README.ru.md)

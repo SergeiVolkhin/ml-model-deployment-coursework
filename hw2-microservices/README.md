@@ -1,22 +1,24 @@
-# HW2 - Monolith vs microservices
+# Модуль 2. Монолит против микросервисов
 
-An architecture study comparing a monolith against a microservice split, documented with diagrams-as-code.
+## Цели задания
 
-## Stack
+- Разобраться, когда монолит стоит дробить на микросервисы, а когда нет.
+- Описать типовые топологии развертывания и их компромиссы.
+- Построить архитектурные диаграммы как код.
 
-Python 3, `diagrams` (Graphviz), pandas, scikit-learn, `IPython.display`.
+## Условия
 
-## Assignment
+Задание аналитическое: нужно сравнить монолитную и микросервисную архитектуры и
+обосновать выбор. Я нарисовал несколько вариантов развертывания библиотекой `diagrams`
+(Postgres, Redis, RabbitMQ, Kafka, Nginx, Prometheus/Grafana, managed RDS) и разобрал
+компромиссы - нагрузка и масштабирование, границы команд, стоимость доставки. Рабочий
+сервис не поднимается, фокус на проектировании.
 
-Required to reason about when to split a monolith into microservices and when to leave it alone. I drew several deployment topologies with the `diagrams` library (Postgres, Redis, RabbitMQ, Kafka, Nginx, Prometheus/Grafana, managed RDS) and wrote up the trade-offs - scaling pressure, team boundaries, deployment cost - rather than shipping a running service.
+## Что внутри
 
-## Files
+- [`HW2_microservices_Вольхин_Сергей.ipynb`](HW2_microservices_Вольхин_Сергей.ipynb) - решение: диаграммы и разбор.
+- [`Развертывание ML моделей_ Домашнее задание 2. Микросервисная архитектура.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%202.%20Микросервисная%20архитектура.pdf) - условие задания.
 
-| File | Description |
-|------|-------------|
-| `HW2_microservices_Вольхин_Сергей.ipynb` | Main solution notebook (diagrams + written analysis) |
-| `Развертывание ML моделей_ Домашнее задание 2. Микросервисная архитектура.pdf` | Assignment specification |
+---
 
-## Notes
-
-This one is mostly judgement, not code. The `diagrams` library was the only real dependency, and getting Graphviz to render on Windows took longer than the actual analysis did.
+[← К списку модулей](../README.ru.md)

@@ -1,23 +1,25 @@
-# HW1 - REST API fundamentals with FastAPI
+# Модуль 1. Основы REST API
 
-Building an HTTP API from the standard library up to FastAPI, then consuming it as a client.
+## Цели задания
 
-## Stack
+- Понять, как устроено HTTP-API на всех уровнях: от голого сокета до фреймворка.
+- Реализовать простой сервер на стандартной библиотеке `http.server`.
+- Обратиться к серверу по HTTP через `requests` и разобрать ответы.
+- Переписать тот же интерфейс на FastAPI с валидацией через Pydantic.
 
-Python 3, FastAPI, Uvicorn, Pydantic, `requests`, built-in `http.server` / `socketserver`, pandas.
+## Условия
 
-## Assignment
+Нужно пройти путь от низкоуровневого HTTP до современного фреймворка. Сначала поднять
+минимальный сервер на `http.server`, затем подключиться к нему клиентом и проверить
+корректность ответов, и наконец собрать тот же API на FastAPI с моделями Pydantic и
+обработкой конкурентных запросов.
 
-The task was to understand HTTP APIs end to end. First implement a minimal server with the standard-library `http.server`, then talk to it over HTTP with the `requests` client, and finally rebuild the same surface on FastAPI with Pydantic models and concurrent request handling. I built both halves: a hand-rolled CRUD handler and the FastAPI version with validation.
+## Что внутри
 
-## Files
+- [`Вольхин_Сергей_Александрович.ipynb`](Вольхин_Сергей_Александрович.ipynb) - решение: сервер и клиент, переход от `http.server` к FastAPI.
+- [`Развертывание ML моделей_ Домашнее задание 1. Знакомство с API.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%201.%20Знакомство%20с%20API.pdf) - условие задания.
+- [`Дополнительная информация FastAPI.txt`](Дополнительная%20информация%20FastAPI.txt) - конспект по FastAPI.
 
-| File | Description |
-|------|-------------|
-| `Вольхин_Сергей_Александрович.ipynb` | Main solution notebook (server + client, `http.server` to FastAPI) |
-| `Развертывание ML моделей_ Домашнее задание 1. Знакомство с API.pdf` | Assignment specification |
-| `Дополнительная информация FastAPI.txt` | Course notes on FastAPI |
+---
 
-## Notes
-
-The starter server is deliberately written in an old `http.server` style, which threw me at first. I kept reaching for FastAPI idioms before I realized the point was to feel the low-level pain before the framework hides it.
+[← К списку модулей](../README.ru.md)

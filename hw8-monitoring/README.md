@@ -1,26 +1,25 @@
-# HW8 - Monitoring and observability
+# Модуль 8. Мониторинг и наблюдаемость
 
-A full observability stack for a recommender service: metrics, dashboards, alerts, drift detection, and data-quality checks.
+## Цели задания
 
-## Stack
+- Поднять полный observability-цикл для ML-сервиса.
+- Связать SLO, метрики, дашборды, алерты, дрифт и качество данных.
 
-Prometheus, Grafana (Telegram alerting), Evidently (drift), DQOps + MySQL 8.4, MLflow, FastAPI ml_service, Docker Compose.
+## Условия
 
-## Assignment
+Нужно выстроить сквозной цикл наблюдаемости: SLO -> метрики -> дашборд Grafana -> алерт в
+Telegram -> дрифт данных и деградация модели (Evidently) -> инцидент качества данных
+(DQOps на MySQL), плюс архитектурное обоснование real-time подмены контента (VPP, Kappa).
+Я собрал compose-стек, дерево метрик из четырёх ветвей (бизнес, приложение, ML,
+инфраструктура) и нагрузочный тест, который поднимает алерт по латентности.
 
-Stand up an end-to-end observability loop: SLO then metrics then Grafana dashboard then Telegram alert then data drift and model degradation via Evidently then a data-quality incident via DQOps on MySQL, plus an architecture rationale for real-time content swap (VPP, Kappa). I built the compose stack, a metrics tree across four branches (business, application, ML, infrastructure), and a load test that trips the latency alert.
+## Что внутри
 
-## Files
+- [`ML-HW_8-main/`](ML-HW_8-main/) - проект: `ml_service/`, `prometheus/`, `grafana/`, `drift/`, `dqops/`, `mlflow/`, скриншоты.
+- [`ML-HW_8-main/README.md`](ML-HW_8-main/README.md) - подробное описание проекта.
+- [`Доп_семинар_Модуля_6_lambda_kappa_architecture.ipynb`](Доп_семинар_Модуля_6_lambda_kappa_architecture.ipynb) - семинар (Lambda / Kappa архитектура).
+- [`Развертывание ML моделей_ Домашнее задание 8. Мониторинг.pdf`](Развертывание%20ML%20моделей_%20Домашнее%20задание%208.%20Мониторинг.pdf) - условие задания.
 
-| File | Description |
-|------|-------------|
-| `ML-HW_8-main/` | Main project: `ml_service/`, `prometheus/`, `grafana/`, `drift/`, `dqops/`, `mlflow/`, screenshots |
-| `ML-HW_8-main/notebook/HW8_Monitoring_Volkhin_Sergei.ipynb` | Solution notebook |
-| `Доп_семинар_Модуля_6_lambda_kappa_architecture.ipynb` | Seminar notebook (Lambda/Kappa architecture) |
-| `Развертывание ML моделей_ Домашнее задание 8. Мониторинг.pdf` | Assignment specification |
+---
 
-Full project writeup: [`ML-HW_8-main/README.md`](ML-HW_8-main/README.md).
-
-## Notes
-
-Grafana's file-based provisioning could not type the Telegram chat id correctly, so I had to push the contact point through the REST API in a post-deploy script. Annoying, but it is the kind of thing you only find out by hitting it.
+[← К списку модулей](../README.ru.md)
