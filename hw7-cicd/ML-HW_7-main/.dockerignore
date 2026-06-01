@@ -1,0 +1,17 @@
+.git/
+.github/
+.gitlab-ci.yml
+tests/
+doc/
+docker/
+scripts/
+*.md
+*.ipynb
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+artifacts/
+pipeline_metadata.json

@@ -1,0 +1,18 @@
+# Пример переменных для применения скелета. Скопировать в terraform.tfvars и заполнить.
+# terraform.tfvars в .gitignore - секреты не коммитим.
+
+yc_token       = "<IAM_или_OAuth_токен>"
+yc_cloud_id    = "<cloud_id>"
+yc_folder_id   = "<folder_id>"
+yc_zone        = "ru-central1-a"
+
+vm_cores       = 4
+vm_memory_gb   = 8
+vm_disk_gb     = 40
+
+ssh_public_key = "ssh-ed25519 AAAA... user@host"
+repo_url       = "https://github.com/SergeiVolkhin/uneemi-mlops.git"
+repo_ref       = "main"
+
+# ОБЯЗАТЕЛЬНО задать (дефолта нет, fail-safe). Сузить до своего IP/CIDR, например:
+ssh_allowed_cidr = ["203.0.113.4/32"]

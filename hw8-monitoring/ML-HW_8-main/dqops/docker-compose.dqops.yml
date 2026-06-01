@@ -1,0 +1,61 @@
+name: ml-hw-8-dqops
+
+networks:
+  dqops:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  dqops_userhome:
+
+services:
+  mysql:
+    image: mysql:${MYSQL_TAG:-8.4.9}
+    container_name: dqops_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_change_me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ml_data_quality}
+      MYSQL_USER: ${MYSQL_USER:-dqops_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-dqops_password_change_me}
+    command:
+      - --skip-mysqlx
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - dqops
+    restart: unless-stopped
+
+  dqops:
+    image: dqops/dqo:${DQOPS_TAG:-1.10.1}
+    container_name: dqops
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DQO_DOCKER_USER_HOME_ALLOW_UNMOUNTED: "true"
+      # Optional - skips Cloud-login prompt if set. Community edition (1.10.x) runs
+      # fully offline; key is only meaningful for paid features we do not use.
+      DQO_CLOUD_API_KEY: ${DQO_CLOUD_API_KEY:-}
+    # In server mode DQOps keeps a Scanner on stdin to detect "Press ENTER to stop".
+    # If we close stdin it crashes; if we feed it lines it spams logs. Solution:
+    # pre-answer the one-shot "Log in to DQOps Cloud? [Y,n]" prompt with "n", then
+    # keep stdin open but empty via `sleep infinity` (Scanner blocks, no log spam).
+    entrypoint: ["bash", "-c"]
+    command: ["(echo n; exec sleep infinity) | /dqo/home/bin/dqo_docker_entrypoint.sh run"]
+    volumes:
+      - dqops_userhome:/dqo/userhome
+    ports:
+      - "8888:8888"
+    networks:
+      - dqops
+    restart: unless-stopped
+    # DQOps web UI: http://localhost:8888
+    # Первый запуск: DQOps cloud key спросит интерактивно - можно пропустить и работать локально.

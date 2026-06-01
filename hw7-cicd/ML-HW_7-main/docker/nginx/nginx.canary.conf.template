@@ -1,0 +1,53 @@
+worker_processes auto;
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format canary '$remote_addr - $upstream_addr [$time_local] '
+                     '"$request" $status $body_bytes_sent '
+                     '"$http_user_agent" version=$service_version';
+    access_log /var/log/nginx/access.log canary;
+
+    upstream stable {
+        server app-stable:8000;
+    }
+
+    upstream canary {
+        server app-canary:8000;
+    }
+
+    # split_clients использует MurmurHash2 от ключа.
+    # request_id уникален per-request, поэтому даже curl с одного IP даст
+    # ожидаемое распределение веса.
+    split_clients "${DOLLAR}remote_addr${DOLLAR}http_user_agent${DOLLAR}request_id" ${DOLLAR}target_pool {
+        ${CANARY_WEIGHT}%   canary;
+        *                   stable;
+    }
+
+    map ${DOLLAR}target_pool ${DOLLAR}service_version {
+        canary  v1.1.0;
+        stable  v1.0.0;
+    }
+
+    server {
+        listen 80;
+
+        location /health {
+            proxy_pass http://${DOLLAR}target_pool/health;
+            proxy_set_header Host ${DOLLAR}host;
+            proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+            proxy_set_header X-Forwarded-Version ${DOLLAR}service_version;
+            add_header X-Service-Version ${DOLLAR}service_version always;
+        }
+
+        location / {
+            proxy_pass http://${DOLLAR}target_pool;
+            proxy_set_header Host ${DOLLAR}host;
+            proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+            proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Version ${DOLLAR}service_version;
+            add_header X-Service-Version ${DOLLAR}service_version always;
+        }
+    }
+}

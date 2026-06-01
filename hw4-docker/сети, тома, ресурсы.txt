@@ -1,0 +1,3 @@
+https://docs.docker.com/reference/compose-file/networks/ - сети
+https://docs.docker.com/reference/compose-file/volumes/ - тома
+https://docs.docker.com/reference/compose-file/deploy/#resources - ресурсы

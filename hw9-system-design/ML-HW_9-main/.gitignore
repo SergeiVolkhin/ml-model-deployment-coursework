@@ -1,0 +1,36 @@
+# Бэкапы ноутбука
+*.ipynb.bak
+*.ipynb.bak2
+*.ipynb.bak3
+*.bak
+
+# Секреты
+.env
+.env.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Terraform
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfstate*
+infra/tfplan
+infra/*.tfvars
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Учебные материалы (не в репо)
+*.pdf
+Промт*.txt

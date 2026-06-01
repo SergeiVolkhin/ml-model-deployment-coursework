@@ -1,0 +1,29 @@
+groups:
+  - name: ml_service_slo
+    interval: 30s
+    rules:
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(request_latency_seconds_bucket[5m])) by (le)) > 1
+        for: 2m
+        labels:
+          severity: warning
+          service: ml_service
+        annotations:
+          summary: "ML-сервис превысил SLO по latency p95"
+          description: |
+            p95 latency запросов ml_service > 1s за последние 5 минут.
+            Это нарушает SLO рекомендательной системы (p95 < 1s).
+            Проверьте текущий LATENCY_MODE и нагрузку.
+
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(requests_total[5m])), 0.001) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          service: ml_service
+        annotations:
+          summary: "ML-сервис превысил SLO по error rate"
+          description: "Доля 5xx ответов > 1% за последние 5 минут."

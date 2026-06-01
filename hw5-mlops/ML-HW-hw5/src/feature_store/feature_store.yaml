@@ -1,0 +1,28 @@
+project: wine_feature_store
+provider: local
+registry:
+  registry_type: sql
+  path: postgresql+psycopg2://feast:feast@localhost:5433/feast
+  cache_ttl_seconds: 60
+
+online_store:
+  type: postgres
+  host: localhost
+  port: 5433
+  database: feast
+  db_schema: public
+  user: feast
+  password: feast
+  sslmode: disable
+
+offline_store:
+  type: postgres
+  host: localhost
+  port: 5433
+  database: feast
+  db_schema: public
+  user: feast
+  password: feast
+  sslmode: disable
+
+entity_key_serialization_version: 3

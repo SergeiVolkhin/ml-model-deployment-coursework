@@ -1,0 +1,45 @@
+name: iac-destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Введите DESTROY для подтверждения'
+        required: true
+        default: 'no'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.9.8"
+  TF_WORKING_DIR: "infra"
+
+jobs:
+  destroy:
+    name: terraform destroy
+    if: ${{ inputs.confirm == 'DESTROY' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: configure aws credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: terraform init
+        run: terraform -chdir=${{ env.TF_WORKING_DIR }} init
+
+      - name: terraform destroy
+        run: terraform -chdir=${{ env.TF_WORKING_DIR }} destroy -auto-approve

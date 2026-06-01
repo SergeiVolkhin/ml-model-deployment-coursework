@@ -1,0 +1,42 @@
+# данные грузим через DVC, не через git
+/data/raw/*
+!/data/raw/.gitignore
+!/data/raw/*.dvc
+/data/processed/
+
+# артефакты модели
+/models/*.pkl
+/models/*.joblib
+
+# MLflow
+/mlruns/
+mlflow.db
+mlflow.db-journal
+
+# DVC кэш (локальный remote .dvc-storage коммитим, чтобы dvc pull работал после клона)
+/.dvc/cache/
+/.dvc/tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Feast
+src/feature_store/data/
+src/feature_store/__pycache__/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# исходный материал курса (не пушим в репо)
+/HW5_MLOps_*.ipynb
+!/HW5_MLOps_Вольхин_Сергей.ipynb
+/Развертывание*.pdf
+/семинар_*.py
+/confusion_matrix.png

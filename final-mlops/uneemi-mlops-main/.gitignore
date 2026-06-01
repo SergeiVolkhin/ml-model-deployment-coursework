@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+wheels/
+.pytest_cache/
+.ruff_cache/
+
+# Virtualenv / uv
+.venv/
+.python-version.local
+
+# ML artifacts
+*.onnx
+models/
+data/
+
+# HuggingFace cache (если кешируется в корне)
+.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Секреты и локальная конфигурация (12-factor): .env не коммитим, только .env.example
+.env
+infra/.env
+*.env.local
+# Облачные ключи и приватные креды - НИКОГДА не попадают в репозиторий
+key.json
+sa-key.json
+credentials.json
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+*.p12
+
+# Feast: сгенерированный реестр и offline-паркеты
+feature_repo/data/
+feature_repo/.ipynb_checkpoints/
+
+# MLflow локальные ранчи (если backend файловый), Evidently отчёты
+mlruns/
+mlartifacts/
+monitoring/reports/
+
+# Демо-данные пайплайна (картинки банка, сгенерированные пары)
+data/images/
+data/pairs/
+data/raw/
+
+# Рантайм-каталоги стека (логи Airflow, промежуточные артефакты прогонов)
+.runtime/
+
+# Terraform состояние и приватные tfvars
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+!infra/terraform/*.tfvars.example
+.terraform.lock.hcl
+# Глобально (terraform в любом каталоге) - подстраховка для публичного репозитория
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+
+# Внутренний отчёт-ревью со шпаргалкой к защите - локальный деливерабл, не публикуем
+/REVIEW.md

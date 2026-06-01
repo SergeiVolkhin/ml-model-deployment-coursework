@@ -1,0 +1,53 @@
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# MLflow local artifacts (volume-mounted in container, keep dir only)
+mlflow/mlruns/*
+!mlflow/mlruns/.gitkeep
+mlflow/mlflow.db
+mlflow/mlflow.db-journal
+
+# Drift reports (regenerated)
+drift/reports/*.html
+drift/reports/*.json
+!drift/reports/.gitkeep
+
+# Architecture build artifacts
+architecture/*.png.tmp
+
+# Local assignment sources (kept locally, not committed)
+HW8_Monitoring_Фамилия_Имя.ipynb
+Промт.txt
+промт.txt
+Развертывание*.pdf
+
+# Local capture notes for screenshots (not for VCS; PNG/JPG/PDF artifacts go in)
+screenshots/SCREENSHOTS.md

@@ -1,0 +1,25 @@
+services:
+  app-blue:
+    image: ml-service:v1.0.0
+    container_name: ml-service-blue
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        MODEL_VERSION: v1.0.0
+    environment:
+      MODEL_VERSION: v1.0.0
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ml-net
+
+networks:
+  ml-net:
+    driver: bridge

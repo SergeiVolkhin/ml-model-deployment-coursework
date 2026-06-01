@@ -1,0 +1,22 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.idea/
+.vscode/
+.DS_Store
+
+# модели и кэш hf
+models/
+.cache/
+*.bin
+*.safetensors
+
+# rabbit/redis тома
+data/redis/
+
+# служебное
+prompt_for_claude_code.md
+*.log

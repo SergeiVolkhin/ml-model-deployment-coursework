@@ -1,0 +1,24 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - data/raw/wine.csv
+    params:
+      - prepare
+    outs:
+      - data/processed
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/processed
+    params:
+      - train
+    outs:
+      - models/model.pkl
+      - confusion_matrix.png
+    metrics:
+      - metrics.json:
+          cache: false

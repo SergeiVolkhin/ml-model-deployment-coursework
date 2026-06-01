@@ -1,0 +1,22 @@
+#cloud-config
+# Подготовка VM: Docker + клон репозитория + подъём стека.
+# Замечание: ONNX SigLIP (~370MB) на VM либо экспортируется отдельно (uv + torch),
+# либо кладётся в объектное хранилище и тянется при провижининге - для скелета
+# оставлено как шаг ручной донастройки (см. infra/terraform/README.md).
+package_update: true
+packages:
+  - git
+  - ca-certificates
+  - curl
+
+runcmd:
+  # Docker ставим с официального скрипта (для прода лучше пинить версию/проверять SHA).
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker ubuntu
+  # Клон пинуется на конкретный ref (не плавающий main).
+  - git clone --depth 1 --branch ${repo_ref} ${repo_url} /opt/uneemi
+  # БЕЗОПАСНОСТЬ: .env с реальными секретами оператор подкладывает сам (секрет-стор,
+  # terraform file-provisioner, ручной scp). НЕ копируем .env.example - в нём дефолтные
+  # учётки. Fail-closed: без реального .env стек не поднимаем.
+  - test -f /opt/uneemi/infra/.env || (echo "ОШИБКА: /opt/uneemi/infra/.env не предоставлен (см. infra/terraform/README.md)"; exit 1)
+  - cd /opt/uneemi/infra && docker compose --env-file .env -f docker-compose.yml up -d

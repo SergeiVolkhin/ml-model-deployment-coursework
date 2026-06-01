@@ -1,0 +1,189 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "uid": "ml-service-hw8",
+  "title": "ML Service - HW8 Monitoring",
+  "description": "Latency p50/p95/p99, request and error rate, ML prediction quality, infra availability. MLflow UI: http://localhost:5001",
+  "tags": ["ml", "hw8", "mfti"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Service availability (up)",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "up{job=\"ml_service\"}", "legendFormat": "{{instance}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}}},
+            {"type": "value", "options": {"1": {"text": "UP", "color": "green"}}}
+          ],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "textMode": "value_and_name"}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Service version",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "app_info", "legendFormat": "{{version}}", "format": "table", "instant": true}
+      ],
+      "options": {"colorMode": "none", "graphMode": "none", "textMode": "name"}
+    },
+    {
+      "id": 3,
+      "type": "text",
+      "title": "MLflow Tracking UI",
+      "gridPos": {"h": 4, "w": 12, "x": 12, "y": 0},
+      "options": {
+        "mode": "markdown",
+        "content": "### MLflow Tracking\n\n[Open MLflow UI](http://localhost:5001) - experiments registered by ml_service on startup.\n\n- Experiment: `ml_service_bootstrap`\n- Latest run logs a `LogisticRegression` baseline and `bootstrap_accuracy`."
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Latency p50 / p95 / p99 (request_latency_seconds)",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.50, sum(rate(request_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p50"},
+        {"refId": "B", "expr": "histogram_quantile(0.95, sum(rate(request_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p95"},
+        {"refId": "C", "expr": "histogram_quantile(0.99, sum(rate(request_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p99"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]},
+          "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "thresholdsStyle": {"mode": "line"}}
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Request rate by status",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 4},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (status) (rate(requests_total[1m]))", "legendFormat": "status={{status}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "stacking": {"mode": "normal"}}
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Error rate (5xx share)",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 13},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(requests_total{status=~\"5..\"}[5m])) / clamp_min(sum(rate(requests_total[5m])), 0.001)",
+          "legendFormat": "5xx share"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 0.01}]},
+          "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 15, "thresholdsStyle": {"mode": "line"}}
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Throughput per endpoint",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 13},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (endpoint) (rate(requests_total[1m]))", "legendFormat": "{{endpoint}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10}
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "heatmap",
+      "title": "Model prediction confidence distribution",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 22},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (le) (rate(model_prediction_confidence_bucket[5m]))",
+          "legendFormat": "{{le}}",
+          "format": "heatmap"
+        }
+      ],
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {"mode": "scheme", "scheme": "Spectral"},
+        "yAxis": {"axisPlacement": "left", "unit": "short"}
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Predictions per second by class",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 22},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (class_label) (rate(model_predictions_total[1m]))", "legendFormat": "{{class_label}}"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "stacking": {"mode": "normal"}}
+        }
+      }
+    }
+  ]
+}

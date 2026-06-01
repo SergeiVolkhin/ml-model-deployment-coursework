@@ -1,0 +1,170 @@
+asyncapi: 3.0.0
+info:
+  title: Face Blur Pipeline
+  version: 1.0.0
+  description: |
+    Конвейер заблюривания лиц на видео из ДЗ5, разнесенный по трем стадиям с
+    Redis Streams в качестве шины событий. Цепочка из 3 событий:
+    grayscale -> faces.detected -> frame.blurred.
+  contact:
+    name: Sergei Volkhin
+  license:
+    name: MIT
+
+servers:
+  redis-local:
+    host: localhost:6379
+    protocol: redis
+    description: Локальный Redis из docker-compose
+
+channels:
+  frames.raw:
+    address: frames.raw
+    description: Сырые BGR-кадры из источника (камера, файл, поток).
+    messages:
+      frame:
+        $ref: '#/components/messages/FrameMessage'
+
+  frames.gray:
+    address: frames.gray
+    description: Кадр после cv2.cvtColor BGR->Gray.
+    messages:
+      grayFrame:
+        $ref: '#/components/messages/GrayFrameMessage'
+
+  frames.faces:
+    address: frames.faces
+    description: Серый кадр плюс bbox-ы лиц от детектора Хаара.
+    messages:
+      faces:
+        $ref: '#/components/messages/FaceDetectionsMessage'
+
+  frames.output:
+    address: frames.output
+    description: BGR-кадр с замозаиченными областями лиц.
+    messages:
+      blurred:
+        $ref: '#/components/messages/BlurredFrameMessage'
+
+operations:
+  toGrayscale:
+    action: send
+    channel:
+      $ref: '#/channels/frames.gray'
+    summary: Стадия 1 - cvtColor BGR в Gray
+    description: Подписывается на frames.raw, переводит кадр в одноканальный grayscale, публикует в frames.gray.
+    messages:
+      - $ref: '#/channels/frames.gray/messages/grayFrame'
+
+  detectFaces:
+    action: send
+    channel:
+      $ref: '#/channels/frames.faces'
+    summary: Стадия 2 - face_cascade.detectMultiScale
+    description: Подписывается на frames.gray, прогоняет каскад Хаара (scaleFactor=1.1, minNeighbors=4), публикует bbox-ы в frames.faces.
+    messages:
+      - $ref: '#/channels/frames.faces/messages/faces'
+
+  applyBlur:
+    action: send
+    channel:
+      $ref: '#/channels/frames.output'
+    summary: Стадия 3 - apply_mosaic_effect
+    description: Подписывается на frames.faces, накладывает мозаику pixel_size=100 на каждый bbox, публикует готовый кадр в frames.output.
+    messages:
+      - $ref: '#/components/messages/BlurredFrameMessage'
+
+components:
+  messages:
+    FrameMessage:
+      name: FrameMessage
+      title: Сырой кадр
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Frame'
+
+    GrayFrameMessage:
+      name: GrayFrameMessage
+      title: Grayscale-кадр
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GrayFrame'
+
+    FaceDetectionsMessage:
+      name: FaceDetectionsMessage
+      title: Серый кадр с детекциями
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/FaceDetections'
+
+    BlurredFrameMessage:
+      name: BlurredFrameMessage
+      title: Замозаиченный кадр
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BlurredFrame'
+
+  schemas:
+    Frame:
+      type: object
+      required: [frame_id, ts, width, height, image_bgr_b64]
+      properties:
+        frame_id:
+          type: string
+          description: uuid кадра, сохраняется по всей цепочке
+        ts:
+          type: number
+          description: unix timestamp источника
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        image_bgr_b64:
+          type: string
+          description: BGR-кадр в base64, OpenCV layout HxWx3 uint8
+
+    GrayFrame:
+      type: object
+      required: [frame_id, ts, width, height, image_gray_b64]
+      properties:
+        frame_id: { type: string }
+        ts: { type: number }
+        width: { type: integer }
+        height: { type: integer }
+        image_gray_b64:
+          type: string
+          description: одноканальный uint8 в base64
+
+    FaceDetections:
+      type: object
+      required: [frame_id, ts, width, height, image_bgr_b64, faces]
+      properties:
+        frame_id: { type: string }
+        ts: { type: number }
+        width: { type: integer }
+        height: { type: integer }
+        image_bgr_b64:
+          type: string
+          description: оригинальный BGR-кадр для следующей стадии
+        faces:
+          type: array
+          items:
+            type: object
+            required: [x, y, w, h]
+            properties:
+              x: { type: integer, minimum: 0 }
+              y: { type: integer, minimum: 0 }
+              w: { type: integer, minimum: 1 }
+              h: { type: integer, minimum: 1 }
+
+    BlurredFrame:
+      type: object
+      required: [frame_id, ts, image_bgr_b64]
+      properties:
+        frame_id: { type: string }
+        ts: { type: number }
+        image_bgr_b64:
+          type: string
+          description: финальный BGR-кадр с мозаикой по лицам

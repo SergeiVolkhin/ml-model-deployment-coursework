@@ -1,0 +1,70 @@
+services:
+  app-stable:
+    image: ml-service:v1.0.0
+    container_name: ml-service-stable
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        MODEL_VERSION: v1.0.0
+    environment:
+      MODEL_VERSION: v1.0.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ml-net
+
+  app-canary:
+    image: ml-service:v1.1.0
+    container_name: ml-service-canary
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        MODEL_VERSION: v1.1.0
+    environment:
+      MODEL_VERSION: v1.1.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - ml-net
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: ml-nginx
+    depends_on:
+      app-stable:
+        condition: service_healthy
+      app-canary:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      CANARY_WEIGHT: "${CANARY_WEIGHT:-10}"
+    volumes:
+      - ./nginx:/templates:ro
+    entrypoint: ["/bin/sh", "-c"]
+    # envsubst подставляет CANARY_WEIGHT, переменная DOLLAR оставляет $ для nginx
+    command:
+      - |
+        apk add --no-cache gettext >/dev/null
+        export DOLLAR='$$'
+        envsubst '$$DOLLAR $$CANARY_WEIGHT' \
+          < /templates/nginx.canary.conf.template \
+          > /etc/nginx/nginx.conf
+        echo "[nginx] config generated, CANARY_WEIGHT=$$CANARY_WEIGHT"
+        exec nginx -g 'daemon off;'
+    networks:
+      - ml-net
+
+networks:
+  ml-net:
+    driver: bridge

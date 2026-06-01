@@ -1,0 +1,56 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/raw/wine.csv
+      hash: md5
+      md5: beeebe3bc41c3aa66d8e1493de4839aa
+      size: 12435
+    - path: src/prepare.py
+      hash: md5
+      md5: 30db7f03588c3e0898ff254ad60e483a
+      size: 1108
+    params:
+      params.yaml:
+        prepare:
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: b440648a732326ab850b2f0f4595fd5e.dir
+      size: 12608
+      nfiles: 2
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: b440648a732326ab850b2f0f4595fd5e.dir
+      size: 12608
+      nfiles: 2
+    - path: src/train.py
+      hash: md5
+      md5: f1d38d48a279b6cdf6528431b042266b
+      size: 3373
+    params:
+      params.yaml:
+        train:
+          model_type: RandomForestClassifier
+          n_estimators: 100
+          max_depth: 10
+          random_state: 42
+    outs:
+    - path: confusion_matrix.png
+      hash: md5
+      md5: 06328aeeac700087ed133df1b078d2dc
+      size: 16594
+    - path: metrics.json
+      hash: md5
+      md5: 3538d6ab66fc9e426fa97a2fb34ab172
+      size: 94
+    - path: models/model.pkl
+      hash: md5
+      md5: 65219c9dd3a741df042868ac7ebe3274
+      size: 211969
